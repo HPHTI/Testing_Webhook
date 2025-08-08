@@ -2,6 +2,7 @@
 const express = require('express');
 const axios = require('axios');
 const https = require('https');
+
 // Create an Express app
 const app = express();
 
@@ -33,24 +34,28 @@ app.get('/', (req, res) => {
 app.post('/', async (req, res) => {
   const body = req.body;
 
-  // Verificar si es un mensaje entrante
-  if (
-    body?.entry?.[0]?.changes?.[0]?.value?.messages &&
-    Array.isArray(body.entry[0].changes[0].value.messages)
-  ) {
-    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
-    console.log(`\n\n📩 Mensaje entrante recibido ${timestamp}\n`);
-    console.log(JSON.stringify(body, null, 2));
+  // Verificamos si el webhook contiene mensajes reales
+  const tieneMensajes = body?.entry?.some(entry =>
+    entry?.changes?.some(change =>
+      change?.value?.messages && Array.isArray(change.value.messages)
+    )
+  );
+
+  if (!tieneMensajes) {
+    console.log("📭 Webhook ignorado (no es mensaje entrante real)");
+    return res.sendStatus(200);
   }
 
-    // Enviar el body al webhook externo
+  // Si llega aquí, es mensaje real
+  const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
+  console.log(`\n\n📩 Mensaje entrante recibido ${timestamp}\n`);
+  console.log(JSON.stringify(body, null, 2));
+
   try {
-    const response = await axios.post('https://ppa.tnghph.com.mx:222/webhook', body, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
+    const response = await axios.post('http://ppa.tnghph.com.mx:222/webhook', body, {
+      headers: { 'Content-Type': 'application/json' },
       timeout: 5000,
-      httpsAgent: insecureAgent // para evitar que se quede colgado
+      httpsAgent: insecureAgent // 🚨 Ignora validación SSL
     });
 
     console.log('\n✅ Petición enviada con éxito:');
@@ -62,25 +67,20 @@ app.post('/', async (req, res) => {
     console.error('\n❌ Error al enviar la petición:');
 
     if (error.response) {
-      // El servidor respondió con un código distinto a 2xx
       console.error(`- Código HTTP: ${error.response.status}`);
       console.error(`- Status Text: ${error.response.statusText}`);
       console.error(`- Headers: ${JSON.stringify(error.response.headers, null, 2)}`);
       console.error(`- Cuerpo respuesta: ${JSON.stringify(error.response.data, null, 2)}`);
     } else if (error.request) {
-      // La solicitud fue enviada pero no hubo respuesta
       console.error('- No hubo respuesta del servidor.');
       console.error(`- Request: ${error.request._currentRequest ? error.request._currentRequest._header : 'Sin headers capturados'}`);
     } else {
-      // Error al configurar la solicitud
       console.error(`- Error al preparar la solicitud: ${error.message}`);
     }
 
     console.error(`- Stack Trace: ${error.stack}`);
   }
 
-
-  // Siempre responder 200 OK para evitar reintentos
   res.sendStatus(200);
 });
 
