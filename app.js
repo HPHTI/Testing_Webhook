@@ -39,7 +39,7 @@ app.post('/', async (req, res) => {
 
     // Enviar el body al webhook externo
   try {
-    const response = await axios.post('http://ppa.tnghph.com.mx:222/webhook', body, {
+    const response = await axios.post('https://ppa.tnghph.com.mx:222/webhook', body, {
       headers: {
         'Content-Type': 'application/json'
       },
