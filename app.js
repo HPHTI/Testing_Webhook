@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 });
 
 // Route for POST requests
-app.post('/', (req, res) => {
+app.post('/', async (req, res) => {
   const body = req.body;
 
   // Verificar si es un mensaje entrante
@@ -72,7 +72,7 @@ app.post('/', (req, res) => {
     console.error(`- Stack Trace: ${error.stack}`);
   }
 
-  
+
   // Siempre responder 200 OK para evitar reintentos
   res.sendStatus(200);
 });
