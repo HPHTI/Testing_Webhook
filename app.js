@@ -1,6 +1,7 @@
 // Import Express.js
 const express = require('express');
 const axios = require('axios');
+const https = require('https');
 // Create an Express app
 const app = express();
 
@@ -10,6 +11,11 @@ app.use(express.json());
 // Set port and verify_token
 const port = process.env.PORT || 3000;
 const verifyToken = process.env.VERIFY_TOKEN;
+
+// Agente para ignorar validación SSL (solo para ese webhook)
+const insecureAgent = new https.Agent({
+  rejectUnauthorized: false
+});
 
 // Route for GET requests
 app.get('/', (req, res) => {
@@ -43,7 +49,8 @@ app.post('/', async (req, res) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      timeout: 5000 // para evitar que se quede colgado
+      timeout: 5000,
+      httpsAgent: insecureAgent // para evitar que se quede colgado
     });
 
     console.log('\n✅ Petición enviada con éxito:');
