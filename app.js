@@ -52,7 +52,7 @@ app.post('/', async (req, res) => {
   console.log(JSON.stringify(body, null, 2));
 
   try {
-    const response = await axios.post('http://ppa.tnghph.com.mx:222/webhook', body, {
+    const response = await axios.post('https://ppa.tnghph.com.mx:222/webhook', body, {
       headers: { 'Content-Type': 'application/json' },
       timeout: 5000,
       httpsAgent: insecureAgent // 🚨 Ignora validación SSL
