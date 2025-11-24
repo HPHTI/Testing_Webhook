@@ -35,16 +35,16 @@ app.post('/', async (req, res) => {
   const body = req.body;
 
   // Verificamos si el webhook contiene mensajes reales
-  const tieneMensajes = body?.entry?.some(entry =>
-    entry?.changes?.some(change =>
-      change?.value?.messages && Array.isArray(change.value.messages)
-    )
-  );
+  // const tieneMensajes = body?.entry?.some(entry =>
+  //   entry?.changes?.some(change =>
+  //     change?.value?.messages && Array.isArray(change.value.messages)
+  //   )
+  // );
 
-  if (!tieneMensajes) {
-    console.log("📭 Webhook ignorado (no es mensaje entrante real)");
-    return res.sendStatus(200);
-  }
+  // if (!tieneMensajes) {
+  //   console.log("📭 Webhook ignorado (no es mensaje entrante real)");
+  //   return res.sendStatus(200);
+  // }
 
   // Si llega aquí, es mensaje real
   const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
