@@ -116,6 +116,9 @@ function registrarError(error) {
     console.error(`- Código HTTP: ${error.response.status}`);
     console.error(`- Status Text: ${error.response.statusText}`);
     console.error(`- Cuerpo respuesta: ${JSON.stringify(error.response.data, null, 2)}`);
+    console.error(`- Verify_Token: ${JSON.stringify(verifyToken, null, 2)}`);
+    console.error(`- Appsecrets: ${JSON.stringify(appSecret, null, 2)}`);
+    console.error(`- Headers: ${JSON.stringify(error.response.headers, null, 2)}`);
   } else if (error.request) {
     console.error('- No hubo respuesta del servidor.');
     console.error(`- Código: ${error.code || 'sin código'}`);
